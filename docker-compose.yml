@@ -1,0 +1,30 @@
+networks:
+  my_net:
+    driver: bridge
+
+services:
+  db:
+    container_name: my_database
+    restart: no
+    image: postgres:14
+    networks:
+      - my_net
+    environment:
+      - POSTGRES_DB=dev_database
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD="my_password"
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -U postgres -d dev_database
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_interval: 3s
+      start_period: 5s
+    ports:
+      - '5430:5432'
+
+volumes:
+  postgres-db:
